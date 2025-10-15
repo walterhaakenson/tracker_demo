@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Success Tracker - Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+        const { Plus, Trash2, TrendingUp, DollarSign, BookOpen, Briefcase, Target, Calendar } = (() => {
+            const iconProps = { size: 18, strokeWidth: 2, fill: 'none', stroke: 'currentColor' };
+            
+            const Plus = (props) => (
+                <svg {...iconProps} {...props} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4"/>
+                </svg>
+            );
+            
+            const Trash2 = (props) => (
+                <svg {...iconProps} {...props} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2M10 11v6M14 11v6"/>
+                </svg>
+            );
+            
+            const TrendingUp = (props) => (
+                <svg {...iconProps} {...props} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                </svg>
+            );
+            
+            const DollarSign = (props) => (
+                <svg {...iconProps} {...props} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            );
+            
+            const BookOpen = (props) => (
+                <svg {...iconProps} {...props} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                </svg>
+            );
+            
+            const Briefcase = (props) => (
+                <svg {...iconProps} {...props} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                </svg>
+            );
+            
+            const Target = (props) => (
+                <svg {...iconProps} {...props} viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10"/>
+                    <circle cx="12" cy="12" r="6"/>
+                    <circle cx="12" cy="12" r="2"/>
+                </svg>
+            );
+            
+            const Calendar = (props) => (
+                <svg {...iconProps} {...props} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+            );
+            
+            return { Plus, Trash2, TrendingUp, DollarSign, BookOpen, Briefcase, Target, Calendar };
+        })();
+
+        function CollegeSuccessTracker() {
+            const [activeTab, setActiveTab] = useState('dashboard');
+            
+            const [courses, setCourses] = useState([
+                { id: 1, name: 'Calculus II', credits: 4, grade: 'A', gradePoints: 4.0 }
+            ]);
+
+            const [applications, setApplications] = useState([
+                { id: 1, company: 'Tech Corp', position: 'Software Intern', appliedDate: '2025-09-20', status: 'Interview Scheduled', deadline: '2025-10-30', notes: 'Second round interview' }
+            ]);
+
+            const [expenses, setExpenses] = useState([
+                { id: 1, category: 'Rent', amount: 500, date: '2025-10-01', type: 'needs', recurring: true },
+                { id: 2, category: 'Groceries', amount: 150, date: '2025-10-05', type: 'needs', recurring: false },
+                { id: 3, category: 'Gas', amount: 60, date: '2025-10-03', type: 'needs', recurring: false },
+                { id: 4, category: 'Clothes', amount: 80, date: '2025-10-07', type: 'wants', recurring: false },
+                { id: 5, category: 'Entertainment', amount: 40, date: '2025-10-06', type: 'wants', recurring: false }
+            ]);
+
+            const [income, setIncome] = useState([
+                { id: 1, source: 'Part-time Job', amount: 800, frequency: 'Monthly' }
+            ]);
+
+            const [budgetGoals, setBudgetGoals] = useState({
+                savingsTarget: 200,
+                needsLimit: 500,
+                wantsLimit: 150
+            });
+
+            const [assignments, setAssignments] = useState([
+                { id: 1, courseId: 1, courseName: 'Calculus II', name: 'Midterm Exam', dueDate: '2025-10-15', status: 'Upcoming', priority: 'High' },
+                { id: 2, courseId: 1, courseName: 'Calculus II', name: 'Homework Ch. 5', dueDate: '2025-10-12', status: 'In Progress', priority: 'Medium' }
+            ]);
+
+            const [studySessions, setStudySessions] = useState([
+                { id: 1, day: 'Monday', time: '14:00', duration: 2, subject: 'Calculus II', location: 'Library' },
+                { id: 2, day: 'Wednesday', time: '16:00', duration: 1.5, subject: 'Physics', location: 'Study Room' }
+            ]);
+
+            const [habits, setHabits] = useState([
+                { id: 1, name: 'Study 2 hours', category: 'Academic', target: 7, completed: [true, true, false, true, true, false, false] },
+                { id: 2, name: 'Exercise', category: 'Health', target: 5, completed: [true, false, true, false, true, false, false] },
+                { id: 3, name: 'Budget review', category: 'Finance', target: 1, completed: [false, false, false, false, false, false, false] }
+            ]);
+
+            const [goals, setGoals] = useState([
+                { id: 1, title: 'Achieve 3.5+ GPA', category: 'Academic', deadline: '2025-12-20', progress: 65 },
+                { id: 2, title: 'Secure Summer Internship', category: 'Career', deadline: '2026-03-01', progress: 40 },
+                { id: 3, title: 'Save $2000', category: 'Finance', deadline: '2025-12-31', progress: 35 }
+            ]);
+
+            const calculateGPA = () => {
+                if (courses.length === 0) return 0;
+                const totalCredits = courses.reduce((sum, c) => sum + c.credits, 0);
+                const totalPoints = courses.reduce((sum, c) => sum + (c.credits * c.gradePoints), 0);
+                return totalCredits > 0 ? (totalPoints / totalCredits).toFixed(2) : 0;
+            };
+
+            const calculateMonthlyBudget = () => {
+                const totalIncome = income.reduce((sum, i) => sum + (i.frequency === 'Monthly' ? i.amount : i.amount / 12), 0);
+                const needsExpenses = expenses.filter(e => e.type === 'needs').reduce((sum, e) => sum + e.amount, 0);
+                const wantsExpenses = expenses.filter(e => e.type === 'wants').reduce((sum, e) => sum + e.amount, 0);
+                const totalExpenses = needsExpenses + wantsExpenses;
+                const actualSavings = totalIncome - totalExpenses;
+                
+                return { 
+                    income: totalIncome, 
+                    needsExpenses,
+                    wantsExpenses,
+                    totalExpenses,
+                    actualSavings,
+                    balance: totalIncome - totalExpenses,
+                    needsPercentage: totalIncome > 0 ? Math.round((needsExpenses / totalIncome) * 100) : 0,
+                    wantsPercentage: totalIncome > 0 ? Math.round((wantsExpenses / totalIncome) * 100) : 0,
+                    savingsPercentage: totalIncome > 0 ? Math.round((actualSavings / totalIncome) * 100) : 0
+                };
+            };
+
+            const getHabitCompletion = () => {
+                if (habits.length === 0) return 0;
+                const totalTargets = habits.reduce((sum, h) => sum + h.target, 0);
+                const totalCompleted = habits.reduce((sum, h) => sum + h.completed.filter(Boolean).length, 0);
+                return totalTargets > 0 ? Math.round((totalCompleted / totalTargets) * 100) : 0;
+            };
+
+            const gpa = calculateGPA();
+            const budget = calculateMonthlyBudget();
+            const habitCompletion = getHabitCompletion();
+
+            // Add functions remain the same
+            const addCourse = () => {
+                setCourses([...courses, {
+                    id: Date.now(),
+                    name: 'New Course',
+                    credits: 3,
+                    grade: 'A',
+                    gradePoints: 4.0
+                }]);
+            };
+
+            const addApplication = () => {
+                setApplications([...applications, {
+                    id: Date.now(),
+                    company: 'Company Name',
+                    position: 'Position',
+                    appliedDate: new Date().toISOString().split('T')[0],
+                    status: 'Applied',
+                    deadline: '',
+                    notes: ''
+                }]);
+            };
+
+            const addExpense = () => {
+                setExpenses([...expenses, {
+                    id: Date.now(),
+                    category: 'Other',
+                    amount: 0,
+                    date: new Date().toISOString().split('T')[0],
+                    type: 'needs',
+                    recurring: false
+                }]);
+            };
+
+            const addIncome = () => {
+                setIncome([...income, {
+                    id: Date.now(),
+                    source: 'New Income Source',
+                    amount: 0,
+                    frequency: 'Monthly'
+                }]);
+            };
+
+            const addAssignment = () => {
+                setAssignments([...assignments, {
+                    id: Date.now(),
+                    courseId: courses.length > 0 ? courses[0].id : 0,
+                    courseName: courses.length > 0 ? courses[0].name : 'Select Course',
+                    name: 'New Assignment',
+                    dueDate: new Date().toISOString().split('T')[0],
+                    status: 'Not Started',
+                    priority: 'Medium'
+                }]);
+            };
+
+            const addStudySession = () => {
+                setStudySessions([...studySessions, {
+                    id: Date.now(),
+                    day: 'Monday',
+                    time: '09:00',
+                    duration: 1,
+                    subject: 'Subject',
+                    location: 'Location'
+                }]);
+            };
+
+            const addHabit = () => {
+                setHabits([...habits, {
+                    id: Date.now(),
+                    name: 'New Habit',
+                    category: 'Other',
+                    target: 7,
+                    completed: [false, false, false, false, false, false, false]
+                }]);
+            };
+
+            const addGoal = () => {
+                setGoals([...goals, {
+                    id: Date.now(),
+                    title: 'New Goal',
+                    category: 'Personal',
+                    deadline: '',
+                    progress: 0
+                }]);
+            };
+
+            const updateCourse = (id, field, value) => {
+                setCourses(courses.map(c => {
+                    if (c.id === id) {
+                        const updated = { ...c, [field]: value };
+                        if (field === 'grade') {
+                            const gradeMap = { 'A': 4.0, 'A-': 3.7, 'B+': 3.3, 'B': 3.0, 'B-': 2.7, 'C+': 2.3, 'C': 2.0, 'C-': 1.7, 'D': 1.0, 'F': 0.0 };
+                            updated.gradePoints = gradeMap[value] || 0;
+                        }
+                        return updated;
+                    }
+                    return c;
+                }));
+            };
+
+            const updateApplication = (id, field, value) => {
+                setApplications(applications.map(a => a.id === id ? { ...a, [field]: value } : a));
+            };
+
+            const updateExpense = (id, field, value) => {
+                setExpenses(expenses.map(e => e.id === id ? { ...e, [field]: value } : e));
+            };
+
+            const updateIncome = (id, field, value) => {
+                setIncome(income.map(i => i.id === id ? { ...i, [field]: value } : i));
+            };
+
+            const updateBudgetGoal = (field, value) => {
+                setBudgetGoals({ ...budgetGoals, [field]: value });
+            };
+
+            const updateAssignment = (id, field, value) => {
+                setAssignments(assignments.map(a => a.id === id ? { ...a, [field]: value } : a));
+            };
+
+            const updateStudySession = (id, field, value) => {
+                setStudySessions(studySessions.map(s => s.id === id ? { ...s, [field]: value } : s));
+            };
+
+            const updateHabit = (id, dayIndex) => {
+                setHabits(habits.map(h => {
+                    if (h.id === id) {
+                        const newCompleted = [...h.completed];
+                        newCompleted[dayIndex] = !newCompleted[dayIndex];
+                        return { ...h, completed: newCompleted };
+                    }
+                    return h;
+                }));
+            };
+
+            const updateGoal = (id, field, value) => {
+                setGoals(goals.map(g => g.id === id ? { ...g, [field]: value } : g));
+            };
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+                    <div className="max-w-7xl mx-auto">
+                        {/* Back to Landing Page Button */}
+                        <div className="mb-4">
+                            <a href="index.html" className="inline-flex items-center text-indigo-600 hover:text-indigo-800 font-semibold">
+                                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                                </svg>
+                                Back to Landing Page
+                            </a>
+                        </div>
+
+                        <header className="bg-white rounded-lg shadow-lg p-6 mb-6">
+                            <h1 className="text-3xl font-bold text-indigo-900 mb-2">College Success Tracker</h1>
+                            <p className="text-gray-600">Your complete system for academic, career, and personal success</p>
+                        </header>
+
+                        <nav className="bg-white rounded-lg shadow-md mb-6 p-2 flex flex-wrap gap-2">
+                            {[
+                                { id: 'dashboard', label: 'Dashboard', icon: TrendingUp },
+                                { id: 'academic', label: 'Academic', icon: BookOpen },
+                                { id: 'schedule', label: 'Schedule', icon: Calendar },
+                                { id: 'internship', label: 'Internships', icon: Briefcase },
+                                { id: 'budget', label: 'Budget', icon: DollarSign },
+                                { id: 'habits', label: 'Habits', icon: Target },
+                                { id: 'goals', label: 'Goals', icon: TrendingUp }
+                            ].map(tab => {
+                                const Icon = tab.icon;
+                                return (
+                                    <button
+                                        key={tab.id}
+                                        onClick={() => setActiveTab(tab.id)}
+                                        className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${
+                                            activeTab === tab.id
+                                                ? 'bg-indigo-600 text-white'
+                                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                        }`}
+                                    >
+                                        <Icon size={18} />
+                                        {tab.label}
+                                    </button>
+                                );
+                            })}
+                        </nav>
+
+                        {/* Dashboard Tab */}
+                        {activeTab === 'dashboard' && (
+                            <div className="space-y-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                    <div className="bg-white rounded-lg shadow-md p-6">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <h3 className="text-gray-600 font-medium">Current GPA</h3>
+                                            <BookOpen className="text-indigo-600" size={24} />
+                                        </div>
+                                        <p className="text-3xl font-bold text-indigo-900">{gpa}</p>
+                                        <p className="text-sm text-gray-500 mt-1">{courses.length} courses tracked</p>
+                                    </div>
+
+                                    <div className="bg-white rounded-lg shadow-md p-6">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <h3 className="text-gray-600 font-medium">Applications</h3>
+                                            <Briefcase className="text-green-600" size={24} />
+                                        </div>
+                                        <p className="text-3xl font-bold text-green-900">{applications.length}</p>
+                                        <p className="text-sm text-gray-500 mt-1">
+                                            {applications.filter(a => a.status === 'Interview Scheduled').length} interviews
+                                        </p>
+                                    </div>
+
+                                    <div className="bg-white rounded-lg shadow-md p-6">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <h3 className="text-gray-600 font-medium">Monthly Savings</h3>
+                                            <DollarSign className={budget.actualSavings >= budgetGoals.savingsTarget ? 'text-green-600' : 'text-orange-600'} size={24} />
+                                        </div>
+                                        <p className={`text-3xl font-bold ${budget.actualSavings >= budgetGoals.savingsTarget ? 'text-green-900' : 'text-orange-900'}`}>
+                                            ${budget.actualSavings.toFixed(0)}
+                                        </p>
+                                        <p className="text-sm text-gray-500 mt-1">Goal: ${budgetGoals.savingsTarget}</p>
+                                    </div>
+
+                                    <div className="bg-white rounded-lg shadow-md p-6">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <h3 className="text-gray-600 font-medium">Habit Score</h3>
+                                            <Target className="text-purple-600" size={24} />
+                                        </div>
+                                        <p className="text-3xl font-bold text-purple-900">{habitCompletion}%</p>
+                                        <p className="text-sm text-gray-500 mt-1">This week completion</p>
+                                    </div>
+                                </div>
+
+                                <div className="bg-white rounded-lg shadow-md p-6">
+                                    <h2 className="text-xl font-bold text-gray-800 mb-4">Active Goals</h2>
+                                    <div className="space-y-4">
+                                        {goals.slice(0, 3).map(goal => (
+                                            <div key={goal.id}>
+                                                <div className="flex justify-between items-center mb-2">
+                                                    <span className="font-medium text-gray-700">{goal.title}</span>
+                                                    <span className="text-sm text-gray-500">{goal.progress}%</span>
+                                                </div>
+                                                <div className="w-full bg-gray-200 rounded-full h-2">
+                                                    <div
+                                                        className="bg-indigo-600 h-2 rounded-full transition-all"
+                                                        style={{ width: `${goal.progress}%` }}
+                                                    />
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* All other tabs would go here - I'll add a few key ones */}
+                        {activeTab === 'academic' && (
+                            <div className="bg-white rounded-lg shadow-md p-6">
+                                <div className="flex justify-between items-center mb-6">
+                                    <h2 className="text-2xl font-bold text-gray-800">Academic Tracker</h2>
+                                    <button
+                                        onClick={addCourse}
+                                        className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
+                                    >
+                                        <Plus size={18} />
+                                        Add Course
+                                    </button>
+                                </div>
+                                
+                                <div className="mb-6 p-4 bg-indigo-50 rounded-lg">
+                                    <div className="text-center">
+                                        <p className="text-sm text-gray-600 mb-1">Cumulative GPA</p>
+                                        <p className="text-4xl font-bold text-indigo-900">{gpa}</p>
+                                    </div>
+                                </div>
+
+                                <div className="overflow-x-auto">
+                                    <table className="w-full">
+                                        <thead className="bg-gray-50">
+                                            <tr>
+                                                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Course Name</th>
+                                                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Credits</th>
+                                                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Grade</th>
+                                                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Grade Points</th>
+                                                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-gray-200">
+                                            {courses.map(course => (
+                                                <tr key={course.id} className="hover:bg-gray-50">
+                                                    <td className="px-4 py-3">
+                                                        <input
+                                                            type="text"
+                                                            value={course.name}
+                                                            onChange={(e) => updateCourse(course.id, 'name', e.target.value)}
+                                                            className="w-full px-2 py-1 border rounded"
+                                                        />
+                                                    </td>
+                                                    <td className="px-4 py-3">
+                                                        <input
+                                                            type="number"
+                                                            value={course.credits}
+                                                            onChange={(e) => updateCourse(course.id, 'credits', Number(e.target.value))}
+                                                            className="w-20 px-2 py-1 border rounded"
+                                                        />
+                                                    </td>
+                                                    <td className="px-4 py-3">
+                                                        <select
+                                                            value={course.grade}
+                                                            onChange={(e) => updateCourse(course.id, 'grade', e.target.value)}
+                                                            className="px-2 py-1 border rounded"
+                                                        >
+                                                            <option>A</option>
+                                                            <option>A-</option>
+                                                            <option>B+</option>
+                                                            <option>B</option>
+                                                            <option>B-</option>
+                                                            <option>C+</option>
+                                                            <option>C</option>
+                                                            <option>C-</option>
+                                                            <option>D</option>
+                                                            <option>F</option>
+                                                        </select>
+                                                    </td>
+                                                    <td className="px-4 py-3">
+                                                        <span className="font-semibold text-indigo-600">{course.gradePoints.toFixed(1)}</span>
+                                                    </td>
+                                                    <td className="px-4 py-3">
+                                                        <button
+                                                            onClick={() => setCourses(courses.filter(c => c.id !== course.id))}
+                                                            className="text-red-600 hover:text-red-800"
+                                                        >
+                                                            <Trash2 size={18} />
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        )}
+
+                        {activeTab === 'budget' && (
+                            <div className="space-y-6">
+                                <div className="bg-white rounded-lg shadow-md p-6">
+                                    <h2 className="text-2xl font-bold text-gray-800 mb-4">Budget Overview</h2>
+                                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                                        <div className="p-4 bg-green-50 rounded-lg">
+                                            <p className="text-sm text-gray-600 mb-1">Monthly Income</p>
+                                            <p className="text-2xl font-bold text-green-700">${budget.income.toFixed(2)}</p>
+                                        </div>
+                                        <div className="p-4 bg-blue-50 rounded-lg">
+                                            <p className="text-sm text-gray-600 mb-1">Needs ({budget.needsPercentage}%)</p>
+                                            <p className="text-2xl font-bold text-blue-700">${budget.needsExpenses.toFixed(2)}</p>
+                                            <p className="text-xs text-gray-500 mt-1">Limit: ${budgetGoals.needsLimit}</p>
+                                        </div>
+                                        <div className="p-4 bg-purple-50 rounded-lg">
+                                            <p className="text-sm text-gray-600 mb-1">Wants ({budget.wantsPercentage}%)</p>
+                                            <p className="text-2xl font-bold text-purple-700">${budget.wantsExpenses.toFixed(2)}</p>
+                                            <p className="text-xs text-gray-500 mt-1">Limit: ${budgetGoals.wantsLimit}</p>
+                                        </div>
+                                        <div className={`p-4 rounded-lg ${budget.actualSavings >= budgetGoals.savingsTarget ? 'bg-emerald-50' : 'bg-orange-50'}`}>
+                                            <p className="text-sm text-gray-600 mb-1">Savings ({budget.savingsPercentage}%)</p>
+                                            <p className={`text-2xl font-bold ${budget.actualSavings >= budgetGoals.savingsTarget ? 'text-emerald-700' : 'text-orange-700'}`}>
+                                                ${budget.actualSavings.toFixed(2)}
+                                            </p>
+                                            <p className="text-xs text-gray-500 mt-1">Goal: ${budgetGoals.savingsTarget}</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="p-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg">
+                                        <h3 className="text-sm font-semibold text-gray-700 mb-3">50/30/20 Rule Progress</h3>
+                                        <div className="space-y-2">
+                                            <div>
+                                                <div className="flex justify-between text-xs text-gray-600 mb-1">
+                                                    <span>Needs (Target: 50%)</span>
+                                                    <span>{budget.needsPercentage}%</span>
+                                                </div>
+                                                <div className="w-full bg-gray-200 rounded-full h-2">
+                                                    <div
+                                                        className={`h-2 rounded-full ${budget.needsPercentage <= 50 ? 'bg-blue-600' : 'bg-red-600'}`}
+                                                        style={{ width: `${Math.min(budget.needsPercentage, 100)}%` }}
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <div className="flex justify-between text-xs text-gray-600 mb-1">
+                                                    <span>Wants (Target: 30%)</span>
+                                                    <span>{budget.wantsPercentage}%</span>
+                                                </div>
+                                                <div className="w-full bg-gray-200 rounded-full h-2">
+                                                    <div
+                                                        className={`h-2 rounded-full ${budget.wantsPercentage <= 30 ? 'bg-purple-600' : 'bg-red-600'}`}
+                                                        style={{ width: `${Math.min(budget.wantsPercentage, 100)}%` }}
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <div className="flex justify-between text-xs text-gray-600 mb-1">
+                                                    <span>Savings (Target: 20%)</span>
+                                                    <span>{budget.savingsPercentage}%</span>
+                                                </div>
+                                                <div className="w-full bg-gray-200 rounded-full h-2">
+                                                    <div
+                                                        className={`h-2 rounded-full ${budget.savingsPercentage >= 20 ? 'bg-emerald-600' : 'bg-orange-600'}`}
+                                                        style={{ width: `${Math.min(budget.savingsPercentage, 100)}%` }}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="bg-white rounded-lg shadow-md p-6">
+                                    <div className="flex justify-between items-center mb-4">
+                                        <h3 className="text-xl font-bold text-gray-800">Income Sources</h3>
+                                        <button
+                                            onClick={addIncome}
+                                            className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
+                                        >
+                                            <Plus size={18} />
+                                            Add Income
+                                        </button>
+                                    </div>
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full">
+                                            <thead className="bg-gray-50">
+                                                <tr>
+                                                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Source</th>
+                                                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Amount</th>
+                                                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Frequency</th>
+                                                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-gray-200">
+                                                {income.map(inc => (
+                                                    <tr key={inc.id} className="hover:bg-gray-50">
+                                                        <td className="px-4 py-3">
+                                                            <input
+                                                                type="text"
+                                                                value={inc.source}
+                                                                onChange={(e) => updateIncome(inc.id, 'source', e.target.value)}
+                                                                className="w-full px-2 py-1 border rounded"
+                                                            />
+                                                        </td>
+                                                        <td className="px-4 py-3">
+                                                            <input
+                                                                type="number"
+                                                                value={inc.amount}
+                                                                onChange={(e) => updateIncome(inc.id, 'amount', Number(e.target.value))}
+                                                                className="w-24 px-2 py-1 border rounded"
+                                                            />
+                                                        </td>
+                                                        <td className="px-4 py-3">
+                                                            <select
+                                                                value={inc.frequency}
+                                                                onChange={(e) => updateIncome(inc.id, 'frequency', e.target.value)}
+                                                                className="px-2 py-1 border rounded"
+                                                            >
+                                                                <option>Weekly</option>
+                                                                <option>Bi-weekly</option>
+                                                                <option>Monthly</option>
+                                                                <option>Annual</option>
+                                                            </select>
+                                                        </td>
+                                                        <td className="px-4 py-3">
+                                                            <button
+                                                                onClick={() => setIncome(income.filter(i => i.id !== inc.id))}
+                                                                className="text-red-600 hover:text-red-800"
+                                                            >
+                                                                <Trash2 size={18} />
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <div className="bg-white rounded-lg shadow-md p-6">
+                                    <h3 className="text-xl font-bold text-gray-800 mb-4">Budget Goals</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Savings Target ($)</label>
+                                            <input
+                                                type="number"
+                                                value={budgetGoals.savingsTarget}
+                                                onChange={(e) => updateBudgetGoal('savingsTarget', Number(e.target.value))}
+                                                className="w-full px-3 py-2 border rounded-md"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Needs Limit ($)</label>
+                                            <input
+                                                type="number"
+                                                value={budgetGoals.needsLimit}
+                                                onChange={(e) => updateBudgetGoal('needsLimit', Number(e.target.value))}
+                                                className="w-full px-3 py-2 border rounded-md"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Wants Limit ($)</label>
+                                            <input
+                                                type="number"
+                                                value={budgetGoals.wantsLimit}
+                                                onChange={(e) => updateBudgetGoal('wantsLimit', Number(e.target.value))}
+                                                className="w-full px-3 py-2 border rounded-md"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="bg-white rounded-lg shadow-md p-6">
+                                        <div className="flex justify-between items-center mb-4">
+                                            <h3 className="text-xl font-bold text-gray-800">Needs</h3>
+                                            <button
+                                                onClick={addExpense}
+                                                className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+                                            >
+                                                <Plus size={18} />
+                                                Add Need
+                                            </button>
+                                        </div>
+                                        <div className="space-y-3">
+                                            {expenses.filter(e => e.type === 'needs').map(expense => (
+                                                <div key={expense.id} className="border rounded-lg p-3">
+                                                    <div className="grid grid-cols-2 gap-2">
+                                                        <input
+                                                            type="text"
+                                                            value={expense.category}
+                                                            onChange={(e) => updateExpense(expense.id, 'category', e.target.value)}
+                                                            className="px-2 py-1 border rounded text-sm"
+                                                            placeholder="Category"
+                                                        />
+                                                        <input
+                                                            type="number"
+                                                            value={expense.amount}
+                                                            onChange={(e) => updateExpense(expense.id, 'amount', Number(e.target.value))}
+                                                            className="px-2 py-1 border rounded text-sm"
+                                                            placeholder="Amount"
+                                                        />
+                                                        <input
+                                                            type="date"
+                                                            value={expense.date}
+                                                            onChange={(e) => updateExpense(expense.id, 'date', e.target.value)}
+                                                            className="px-2 py-1 border rounded text-sm"
+                                                        />
+                                                        <div className="flex items-center gap-2">
+                                                            <label className="flex items-center gap-1 text-sm">
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={expense.recurring}
+                                                                    onChange={(e) => updateExpense(expense.id, 'recurring', e.target.checked)}
+                                                                    className="w-4 h-4"
+                                                                />
+                                                                Recurring
+                                                            </label>
+                                                            <button
+                                                                onClick={() => setExpenses(expenses.filter(e => e.id !== expense.id))}
+                                                                className="ml-auto text-red-600 hover:text-red-800"
+                                                            >
+                                                                <Trash2 size={16} />
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                            <div className="pt-3 border-t">
+                                                <div className="flex justify-between items-center">
+                                                    <span className="font-semibold text-gray-700">Total Needs:</span>
+                                                    <span className={`font-bold ${budget.needsExpenses <= budgetGoals.needsLimit ? 'text-blue-600' : 'text-red-600'}`}>
+                                                        ${budget.needsExpenses.toFixed(2)}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-white rounded-lg shadow-md p-6">
+                                        <div className="flex justify-between items-center mb-4">
+                                            <h3 className="text-xl font-bold text-gray-800">Wants</h3>
+                                            <button
+                                                onClick={() => {
+                                                    setExpenses([...expenses, {
+                                                        id: Date.now(),
+                                                        category: 'Other',
+                                                        amount: 0,
+                                                        date: new Date().toISOString().split('T')[0],
+                                                        type: 'wants',
+                                                        recurring: false
+                                                    }]);
+                                                }}
+                                                className="flex items-center gap-2 bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700"
+                                            >
+                                                <Plus size={18} />
+                                                Add Want
+                                            </button>
+                                        </div>
+                                        <div className="space-y-3">
+                                            {expenses.filter(e => e.type === 'wants').map(expense => (
+                                                <div key={expense.id} className="border rounded-lg p-3">
+                                                    <div className="grid grid-cols-2 gap-2">
+                                                        <input
+                                                            type="text"
+                                                            value={expense.category}
+                                                            onChange={(e) => updateExpense(expense.id, 'category', e.target.value)}
+                                                            className="px-2 py-1 border rounded text-sm"
+                                                            placeholder="Category"
+                                                        />
+                                                        <input
+                                                            type="number"
+                                                            value={expense.amount}
+                                                            onChange={(e) => updateExpense(expense.id, 'amount', Number(e.target.value))}
+                                                            className="px-2 py-1 border rounded text-sm"
+                                                            placeholder="Amount"
+                                                        />
+                                                        <input
+                                                            type="date"
+                                                            value={expense.date}
+                                                            onChange={(e) => updateExpense(expense.id, 'date', e.target.value)}
+                                                            className="px-2 py-1 border rounded text-sm"
+                                                        />
+                                                        <div className="flex items-center gap-2">
+                                                            <label className="flex items-center gap-1 text-sm">
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={expense.recurring}
+                                                                    onChange={(e) => updateExpense(expense.id, 'recurring', e.target.checked)}
+                                                                    className="w-4 h-4"
+                                                                />
+                                                                Recurring
+                                                            </label>
+                                                            <button
+                                                                onClick={() => setExpenses(expenses.filter(e => e.id !== expense.id))}
+                                                                className="ml-auto text-red-600 hover:text-red-800"
+                                                            >
+                                                                <Trash2 size={16} />
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                            <div className="pt-3 border-t">
+                                                <div className="flex justify-between items-center">
+                                                    <span className="font-semibold text-gray-700">Total Wants:</span>
+                                                    <span className={`font-bold ${budget.wantsExpenses <= budgetGoals.wantsLimit ? 'text-purple-600' : 'text-red-600'}`}>
+                                                        ${budget.wantsExpenses.toFixed(2)}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Note: Other tabs (schedule, internships, habits, goals) would follow the same pattern */}
+                        {activeTab !== 'dashboard' && activeTab !== 'academic' && activeTab !== 'budget' && (
+                            <div className="bg-white rounded-lg shadow-md p-12 text-center">
+                                <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                                    {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} Module
+                                </h2>
+                                <p className="text-gray-600 mb-6">
+                                    This tab is fully functional in the complete version. Try the Academic and Budget tabs to see the tracker in action!
+                                </p>
+                                <a href="index.html" className="inline-flex items-center bg-indigo-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-indigo-700">
+                                    Get Full Access for $19
+                                </a>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+
+        ReactDOM.render(<CollegeSuccessTracker />, document.getElementById('root'));
+    </script>
+</body>
+</html>
