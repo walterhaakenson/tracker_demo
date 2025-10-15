@@ -3,842 +3,629 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>College Success Tracker - Demo</title>
+    <title>College Success Tracker - Stop Juggling. Start Crushing.</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-        body { font-family: 'Inter', sans-serif; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.3);
+        }
+        
+        .pulse-slow {
+            animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .float {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .testimonial-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .feature-icon {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        }
     </style>
 </head>
-<body>
-    <div id="root"></div>
+<body class="bg-gradient-to-br from-slate-50 via-purple-50 to-indigo-50">
+    
+    <!-- Header -->
+    <header class="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-lg z-50 border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-2">
+                    <div class="w-10 h-10 gradient-bg rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                    </div>
+                    <span class="text-xl font-bold gradient-text">Success Tracker</span>
+                </div>
+                <a href="#demo" class="gradient-bg text-white px-6 py-2.5 rounded-full font-semibold hover:shadow-lg transition-all duration-300 hover:scale-105">
+                    Try It Free
+                </a>
+            </div>
+        </div>
+    </header>
 
-    <script type="text/babel">
-        const { useState } = React;
-        const { Plus, Trash2, TrendingUp, DollarSign, BookOpen, Briefcase, Target, Calendar } = (() => {
-            const iconProps = { size: 18, strokeWidth: 2, fill: 'none', stroke: 'currentColor' };
-            
-            const Plus = (props) => (
-                <svg {...iconProps} {...props} viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4"/>
-                </svg>
-            );
-            
-            const Trash2 = (props) => (
-                <svg {...iconProps} {...props} viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2M10 11v6M14 11v6"/>
-                </svg>
-            );
-            
-            const TrendingUp = (props) => (
-                <svg {...iconProps} {...props} viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
-                </svg>
-            );
-            
-            const DollarSign = (props) => (
-                <svg {...iconProps} {...props} viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-            );
-            
-            const BookOpen = (props) => (
-                <svg {...iconProps} {...props} viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                </svg>
-            );
-            
-            const Briefcase = (props) => (
-                <svg {...iconProps} {...props} viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                </svg>
-            );
-            
-            const Target = (props) => (
-                <svg {...iconProps} {...props} viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="10"/>
-                    <circle cx="12" cy="12" r="6"/>
-                    <circle cx="12" cy="12" r="2"/>
-                </svg>
-            );
-            
-            const Calendar = (props) => (
-                <svg {...iconProps} {...props} viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                </svg>
-            );
-            
-            return { Plus, Trash2, TrendingUp, DollarSign, BookOpen, Briefcase, Target, Calendar };
-        })();
+    <!-- Hero Section -->
+    <section class="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl sm:text-5xl font-black text-gray-900 mb-4">
+                    One Payment. Lifetime Access.
+                </h2>
+                <p class="text-xl text-gray-600">No subscription. No hidden fees. Just results.</p>
+            </div>
 
-        function CollegeSuccessTracker() {
-            const [activeTab, setActiveTab] = useState('dashboard');
-            
-            const [courses, setCourses] = useState([
-                { id: 1, name: 'Calculus II', credits: 4, grade: 'A', gradePoints: 4.0 }
-            ]);
-
-            const [applications, setApplications] = useState([
-                { id: 1, company: 'Tech Corp', position: 'Software Intern', appliedDate: '2025-09-20', status: 'Interview Scheduled', deadline: '2025-10-30', notes: 'Second round interview' }
-            ]);
-
-            const [expenses, setExpenses] = useState([
-                { id: 1, category: 'Rent', amount: 500, date: '2025-10-01', type: 'needs', recurring: true },
-                { id: 2, category: 'Groceries', amount: 150, date: '2025-10-05', type: 'needs', recurring: false },
-                { id: 3, category: 'Gas', amount: 60, date: '2025-10-03', type: 'needs', recurring: false },
-                { id: 4, category: 'Clothes', amount: 80, date: '2025-10-07', type: 'wants', recurring: false },
-                { id: 5, category: 'Entertainment', amount: 40, date: '2025-10-06', type: 'wants', recurring: false }
-            ]);
-
-            const [income, setIncome] = useState([
-                { id: 1, source: 'Part-time Job', amount: 800, frequency: 'Monthly' }
-            ]);
-
-            const [budgetGoals, setBudgetGoals] = useState({
-                savingsTarget: 200,
-                needsLimit: 500,
-                wantsLimit: 150
-            });
-
-            const [assignments, setAssignments] = useState([
-                { id: 1, courseId: 1, courseName: 'Calculus II', name: 'Midterm Exam', dueDate: '2025-10-15', status: 'Upcoming', priority: 'High' },
-                { id: 2, courseId: 1, courseName: 'Calculus II', name: 'Homework Ch. 5', dueDate: '2025-10-12', status: 'In Progress', priority: 'Medium' }
-            ]);
-
-            const [studySessions, setStudySessions] = useState([
-                { id: 1, day: 'Monday', time: '14:00', duration: 2, subject: 'Calculus II', location: 'Library' },
-                { id: 2, day: 'Wednesday', time: '16:00', duration: 1.5, subject: 'Physics', location: 'Study Room' }
-            ]);
-
-            const [habits, setHabits] = useState([
-                { id: 1, name: 'Study 2 hours', category: 'Academic', target: 7, completed: [true, true, false, true, true, false, false] },
-                { id: 2, name: 'Exercise', category: 'Health', target: 5, completed: [true, false, true, false, true, false, false] },
-                { id: 3, name: 'Budget review', category: 'Finance', target: 1, completed: [false, false, false, false, false, false, false] }
-            ]);
-
-            const [goals, setGoals] = useState([
-                { id: 1, title: 'Achieve 3.5+ GPA', category: 'Academic', deadline: '2025-12-20', progress: 65 },
-                { id: 2, title: 'Secure Summer Internship', category: 'Career', deadline: '2026-03-01', progress: 40 },
-                { id: 3, title: 'Save $2000', category: 'Finance', deadline: '2025-12-31', progress: 35 }
-            ]);
-
-            const calculateGPA = () => {
-                if (courses.length === 0) return 0;
-                const totalCredits = courses.reduce((sum, c) => sum + c.credits, 0);
-                const totalPoints = courses.reduce((sum, c) => sum + (c.credits * c.gradePoints), 0);
-                return totalCredits > 0 ? (totalPoints / totalCredits).toFixed(2) : 0;
-            };
-
-            const calculateMonthlyBudget = () => {
-                const totalIncome = income.reduce((sum, i) => sum + (i.frequency === 'Monthly' ? i.amount : i.amount / 12), 0);
-                const needsExpenses = expenses.filter(e => e.type === 'needs').reduce((sum, e) => sum + e.amount, 0);
-                const wantsExpenses = expenses.filter(e => e.type === 'wants').reduce((sum, e) => sum + e.amount, 0);
-                const totalExpenses = needsExpenses + wantsExpenses;
-                const actualSavings = totalIncome - totalExpenses;
-                
-                return { 
-                    income: totalIncome, 
-                    needsExpenses,
-                    wantsExpenses,
-                    totalExpenses,
-                    actualSavings,
-                    balance: totalIncome - totalExpenses,
-                    needsPercentage: totalIncome > 0 ? Math.round((needsExpenses / totalIncome) * 100) : 0,
-                    wantsPercentage: totalIncome > 0 ? Math.round((wantsExpenses / totalIncome) * 100) : 0,
-                    savingsPercentage: totalIncome > 0 ? Math.round((actualSavings / totalIncome) * 100) : 0
-                };
-            };
-
-            const getHabitCompletion = () => {
-                if (habits.length === 0) return 0;
-                const totalTargets = habits.reduce((sum, h) => sum + h.target, 0);
-                const totalCompleted = habits.reduce((sum, h) => sum + h.completed.filter(Boolean).length, 0);
-                return totalTargets > 0 ? Math.round((totalCompleted / totalTargets) * 100) : 0;
-            };
-
-            const gpa = calculateGPA();
-            const budget = calculateMonthlyBudget();
-            const habitCompletion = getHabitCompletion();
-
-            // Add functions remain the same
-            const addCourse = () => {
-                setCourses([...courses, {
-                    id: Date.now(),
-                    name: 'New Course',
-                    credits: 3,
-                    grade: 'A',
-                    gradePoints: 4.0
-                }]);
-            };
-
-            const addApplication = () => {
-                setApplications([...applications, {
-                    id: Date.now(),
-                    company: 'Company Name',
-                    position: 'Position',
-                    appliedDate: new Date().toISOString().split('T')[0],
-                    status: 'Applied',
-                    deadline: '',
-                    notes: ''
-                }]);
-            };
-
-            const addExpense = () => {
-                setExpenses([...expenses, {
-                    id: Date.now(),
-                    category: 'Other',
-                    amount: 0,
-                    date: new Date().toISOString().split('T')[0],
-                    type: 'needs',
-                    recurring: false
-                }]);
-            };
-
-            const addIncome = () => {
-                setIncome([...income, {
-                    id: Date.now(),
-                    source: 'New Income Source',
-                    amount: 0,
-                    frequency: 'Monthly'
-                }]);
-            };
-
-            const addAssignment = () => {
-                setAssignments([...assignments, {
-                    id: Date.now(),
-                    courseId: courses.length > 0 ? courses[0].id : 0,
-                    courseName: courses.length > 0 ? courses[0].name : 'Select Course',
-                    name: 'New Assignment',
-                    dueDate: new Date().toISOString().split('T')[0],
-                    status: 'Not Started',
-                    priority: 'Medium'
-                }]);
-            };
-
-            const addStudySession = () => {
-                setStudySessions([...studySessions, {
-                    id: Date.now(),
-                    day: 'Monday',
-                    time: '09:00',
-                    duration: 1,
-                    subject: 'Subject',
-                    location: 'Location'
-                }]);
-            };
-
-            const addHabit = () => {
-                setHabits([...habits, {
-                    id: Date.now(),
-                    name: 'New Habit',
-                    category: 'Other',
-                    target: 7,
-                    completed: [false, false, false, false, false, false, false]
-                }]);
-            };
-
-            const addGoal = () => {
-                setGoals([...goals, {
-                    id: Date.now(),
-                    title: 'New Goal',
-                    category: 'Personal',
-                    deadline: '',
-                    progress: 0
-                }]);
-            };
-
-            const updateCourse = (id, field, value) => {
-                setCourses(courses.map(c => {
-                    if (c.id === id) {
-                        const updated = { ...c, [field]: value };
-                        if (field === 'grade') {
-                            const gradeMap = { 'A': 4.0, 'A-': 3.7, 'B+': 3.3, 'B': 3.0, 'B-': 2.7, 'C+': 2.3, 'C': 2.0, 'C-': 1.7, 'D': 1.0, 'F': 0.0 };
-                            updated.gradePoints = gradeMap[value] || 0;
-                        }
-                        return updated;
-                    }
-                    return c;
-                }));
-            };
-
-            const updateApplication = (id, field, value) => {
-                setApplications(applications.map(a => a.id === id ? { ...a, [field]: value } : a));
-            };
-
-            const updateExpense = (id, field, value) => {
-                setExpenses(expenses.map(e => e.id === id ? { ...e, [field]: value } : e));
-            };
-
-            const updateIncome = (id, field, value) => {
-                setIncome(income.map(i => i.id === id ? { ...i, [field]: value } : i));
-            };
-
-            const updateBudgetGoal = (field, value) => {
-                setBudgetGoals({ ...budgetGoals, [field]: value });
-            };
-
-            const updateAssignment = (id, field, value) => {
-                setAssignments(assignments.map(a => a.id === id ? { ...a, [field]: value } : a));
-            };
-
-            const updateStudySession = (id, field, value) => {
-                setStudySessions(studySessions.map(s => s.id === id ? { ...s, [field]: value } : s));
-            };
-
-            const updateHabit = (id, dayIndex) => {
-                setHabits(habits.map(h => {
-                    if (h.id === id) {
-                        const newCompleted = [...h.completed];
-                        newCompleted[dayIndex] = !newCompleted[dayIndex];
-                        return { ...h, completed: newCompleted };
-                    }
-                    return h;
-                }));
-            };
-
-            const updateGoal = (id, field, value) => {
-                setGoals(goals.map(g => g.id === id ? { ...g, [field]: value } : g));
-            };
-
-            return (
-                <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-                    <div className="max-w-7xl mx-auto">
-                        {/* Back to Landing Page Button */}
-                        <div className="mb-4">
-                            <a href="index.html" className="inline-flex items-center text-indigo-600 hover:text-indigo-800 font-semibold">
-                                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                                </svg>
-                                Back to Landing Page
-                            </a>
+            <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border-4 border-indigo-200">
+                <div class="gradient-bg text-white text-center py-4">
+                    <span class="text-lg font-bold">🎉 LIMITED TIME LAUNCH SPECIAL</span>
+                </div>
+                <div class="p-12">
+                    <div class="text-center mb-8">
+                        <div class="inline-block">
+                            <span class="text-gray-400 text-2xl line-through mr-3">$49</span>
+                            <span class="text-6xl font-black gradient-text">$19</span>
                         </div>
+                        <p class="text-gray-600 mt-2">One-time payment</p>
+                    </div>
 
-                        <header className="bg-white rounded-lg shadow-lg p-6 mb-6">
-                            <h1 className="text-3xl font-bold text-indigo-900 mb-2">College Success Tracker</h1>
-                            <p className="text-gray-600">Your complete system for academic, career, and personal success</p>
-                        </header>
+                    <div class="space-y-4 mb-8">
+                        <div class="flex items-center">
+                            <svg class="w-6 h-6 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            <span class="text-gray-700 text-lg">All 6 modules included</span>
+                        </div>
+                        <div class="flex items-center">
+                            <svg class="w-6 h-6 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            <span class="text-gray-700 text-lg">Lifetime access & updates</span>
+                        </div>
+                        <div class="flex items-center">
+                            <svg class="w-6 h-6 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            <span class="text-gray-700 text-lg">Works on any device</span>
+                        </div>
+                        <div class="flex items-center">
+                            <svg class="w-6 h-6 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            <span class="text-gray-700 text-lg">No subscription, no hidden fees</span>
+                        </div>
+                        <div class="flex items-center">
+                            <svg class="w-6 h-6 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            <span class="text-gray-700 text-lg">Instant download</span>
+                        </div>
+                        <div class="flex items-center">
+                            <svg class="w-6 h-6 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            <span class="text-gray-700 text-lg">Setup guide included</span>
+                        </div>
+                    </div>
 
-                        <nav className="bg-white rounded-lg shadow-md mb-6 p-2 flex flex-wrap gap-2">
-                            {[
-                                { id: 'dashboard', label: 'Dashboard', icon: TrendingUp },
-                                { id: 'academic', label: 'Academic', icon: BookOpen },
-                                { id: 'schedule', label: 'Schedule', icon: Calendar },
-                                { id: 'internship', label: 'Internships', icon: Briefcase },
-                                { id: 'budget', label: 'Budget', icon: DollarSign },
-                                { id: 'habits', label: 'Habits', icon: Target },
-                                { id: 'goals', label: 'Goals', icon: TrendingUp }
-                            ].map(tab => {
-                                const Icon = tab.icon;
-                                return (
-                                    <button
-                                        key={tab.id}
-                                        onClick={() => setActiveTab(tab.id)}
-                                        className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${
-                                            activeTab === tab.id
-                                                ? 'bg-indigo-600 text-white'
-                                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                        }`}
-                                    >
-                                        <Icon size={18} />
-                                        {tab.label}
-                                    </button>
-                                );
-                            })}
-                        </nav>
+                    <a href="#demo" class="block w-full gradient-bg text-white text-center px-8 py-5 rounded-full text-xl font-bold hover:shadow-2xl transition-all duration-300 hover:scale-105 mb-6">
+                        Get Instant Access Now
+                    </a>
 
-                        {/* Dashboard Tab */}
-                        {activeTab === 'dashboard' && (
-                            <div className="space-y-6">
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                                    <div className="bg-white rounded-lg shadow-md p-6">
-                                        <div className="flex items-center justify-between mb-2">
-                                            <h3 className="text-gray-600 font-medium">Current GPA</h3>
-                                            <BookOpen className="text-indigo-600" size={24} />
-                                        </div>
-                                        <p className="text-3xl font-bold text-indigo-900">{gpa}</p>
-                                        <p className="text-sm text-gray-500 mt-1">{courses.length} courses tracked</p>
-                                    </div>
-
-                                    <div className="bg-white rounded-lg shadow-md p-6">
-                                        <div className="flex items-center justify-between mb-2">
-                                            <h3 className="text-gray-600 font-medium">Applications</h3>
-                                            <Briefcase className="text-green-600" size={24} />
-                                        </div>
-                                        <p className="text-3xl font-bold text-green-900">{applications.length}</p>
-                                        <p className="text-sm text-gray-500 mt-1">
-                                            {applications.filter(a => a.status === 'Interview Scheduled').length} interviews
-                                        </p>
-                                    </div>
-
-                                    <div className="bg-white rounded-lg shadow-md p-6">
-                                        <div className="flex items-center justify-between mb-2">
-                                            <h3 className="text-gray-600 font-medium">Monthly Savings</h3>
-                                            <DollarSign className={budget.actualSavings >= budgetGoals.savingsTarget ? 'text-green-600' : 'text-orange-600'} size={24} />
-                                        </div>
-                                        <p className={`text-3xl font-bold ${budget.actualSavings >= budgetGoals.savingsTarget ? 'text-green-900' : 'text-orange-900'}`}>
-                                            ${budget.actualSavings.toFixed(0)}
-                                        </p>
-                                        <p className="text-sm text-gray-500 mt-1">Goal: ${budgetGoals.savingsTarget}</p>
-                                    </div>
-
-                                    <div className="bg-white rounded-lg shadow-md p-6">
-                                        <div className="flex items-center justify-between mb-2">
-                                            <h3 className="text-gray-600 font-medium">Habit Score</h3>
-                                            <Target className="text-purple-600" size={24} />
-                                        </div>
-                                        <p className="text-3xl font-bold text-purple-900">{habitCompletion}%</p>
-                                        <p className="text-sm text-gray-500 mt-1">This week completion</p>
-                                    </div>
-                                </div>
-
-                                <div className="bg-white rounded-lg shadow-md p-6">
-                                    <h2 className="text-xl font-bold text-gray-800 mb-4">Active Goals</h2>
-                                    <div className="space-y-4">
-                                        {goals.slice(0, 3).map(goal => (
-                                            <div key={goal.id}>
-                                                <div className="flex justify-between items-center mb-2">
-                                                    <span className="font-medium text-gray-700">{goal.title}</span>
-                                                    <span className="text-sm text-gray-500">{goal.progress}%</span>
-                                                </div>
-                                                <div className="w-full bg-gray-200 rounded-full h-2">
-                                                    <div
-                                                        className="bg-indigo-600 h-2 rounded-full transition-all"
-                                                        style={{ width: `${goal.progress}%` }}
-                                                    />
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* All other tabs would go here - I'll add a few key ones */}
-                        {activeTab === 'academic' && (
-                            <div className="bg-white rounded-lg shadow-md p-6">
-                                <div className="flex justify-between items-center mb-6">
-                                    <h2 className="text-2xl font-bold text-gray-800">Academic Tracker</h2>
-                                    <button
-                                        onClick={addCourse}
-                                        className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
-                                    >
-                                        <Plus size={18} />
-                                        Add Course
-                                    </button>
-                                </div>
-                                
-                                <div className="mb-6 p-4 bg-indigo-50 rounded-lg">
-                                    <div className="text-center">
-                                        <p className="text-sm text-gray-600 mb-1">Cumulative GPA</p>
-                                        <p className="text-4xl font-bold text-indigo-900">{gpa}</p>
-                                    </div>
-                                </div>
-
-                                <div className="overflow-x-auto">
-                                    <table className="w-full">
-                                        <thead className="bg-gray-50">
-                                            <tr>
-                                                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Course Name</th>
-                                                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Credits</th>
-                                                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Grade</th>
-                                                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Grade Points</th>
-                                                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="divide-y divide-gray-200">
-                                            {courses.map(course => (
-                                                <tr key={course.id} className="hover:bg-gray-50">
-                                                    <td className="px-4 py-3">
-                                                        <input
-                                                            type="text"
-                                                            value={course.name}
-                                                            onChange={(e) => updateCourse(course.id, 'name', e.target.value)}
-                                                            className="w-full px-2 py-1 border rounded"
-                                                        />
-                                                    </td>
-                                                    <td className="px-4 py-3">
-                                                        <input
-                                                            type="number"
-                                                            value={course.credits}
-                                                            onChange={(e) => updateCourse(course.id, 'credits', Number(e.target.value))}
-                                                            className="w-20 px-2 py-1 border rounded"
-                                                        />
-                                                    </td>
-                                                    <td className="px-4 py-3">
-                                                        <select
-                                                            value={course.grade}
-                                                            onChange={(e) => updateCourse(course.id, 'grade', e.target.value)}
-                                                            className="px-2 py-1 border rounded"
-                                                        >
-                                                            <option>A</option>
-                                                            <option>A-</option>
-                                                            <option>B+</option>
-                                                            <option>B</option>
-                                                            <option>B-</option>
-                                                            <option>C+</option>
-                                                            <option>C</option>
-                                                            <option>C-</option>
-                                                            <option>D</option>
-                                                            <option>F</option>
-                                                        </select>
-                                                    </td>
-                                                    <td className="px-4 py-3">
-                                                        <span className="font-semibold text-indigo-600">{course.gradePoints.toFixed(1)}</span>
-                                                    </td>
-                                                    <td className="px-4 py-3">
-                                                        <button
-                                                            onClick={() => setCourses(courses.filter(c => c.id !== course.id))}
-                                                            className="text-red-600 hover:text-red-800"
-                                                        >
-                                                            <Trash2 size={18} />
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        )}
-
-                        {activeTab === 'budget' && (
-                            <div className="space-y-6">
-                                <div className="bg-white rounded-lg shadow-md p-6">
-                                    <h2 className="text-2xl font-bold text-gray-800 mb-4">Budget Overview</h2>
-                                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                                        <div className="p-4 bg-green-50 rounded-lg">
-                                            <p className="text-sm text-gray-600 mb-1">Monthly Income</p>
-                                            <p className="text-2xl font-bold text-green-700">${budget.income.toFixed(2)}</p>
-                                        </div>
-                                        <div className="p-4 bg-blue-50 rounded-lg">
-                                            <p className="text-sm text-gray-600 mb-1">Needs ({budget.needsPercentage}%)</p>
-                                            <p className="text-2xl font-bold text-blue-700">${budget.needsExpenses.toFixed(2)}</p>
-                                            <p className="text-xs text-gray-500 mt-1">Limit: ${budgetGoals.needsLimit}</p>
-                                        </div>
-                                        <div className="p-4 bg-purple-50 rounded-lg">
-                                            <p className="text-sm text-gray-600 mb-1">Wants ({budget.wantsPercentage}%)</p>
-                                            <p className="text-2xl font-bold text-purple-700">${budget.wantsExpenses.toFixed(2)}</p>
-                                            <p className="text-xs text-gray-500 mt-1">Limit: ${budgetGoals.wantsLimit}</p>
-                                        </div>
-                                        <div className={`p-4 rounded-lg ${budget.actualSavings >= budgetGoals.savingsTarget ? 'bg-emerald-50' : 'bg-orange-50'}`}>
-                                            <p className="text-sm text-gray-600 mb-1">Savings ({budget.savingsPercentage}%)</p>
-                                            <p className={`text-2xl font-bold ${budget.actualSavings >= budgetGoals.savingsTarget ? 'text-emerald-700' : 'text-orange-700'}`}>
-                                                ${budget.actualSavings.toFixed(2)}
-                                            </p>
-                                            <p className="text-xs text-gray-500 mt-1">Goal: ${budgetGoals.savingsTarget}</p>
-                                        </div>
-                                    </div>
-
-                                    <div className="p-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg">
-                                        <h3 className="text-sm font-semibold text-gray-700 mb-3">50/30/20 Rule Progress</h3>
-                                        <div className="space-y-2">
-                                            <div>
-                                                <div className="flex justify-between text-xs text-gray-600 mb-1">
-                                                    <span>Needs (Target: 50%)</span>
-                                                    <span>{budget.needsPercentage}%</span>
-                                                </div>
-                                                <div className="w-full bg-gray-200 rounded-full h-2">
-                                                    <div
-                                                        className={`h-2 rounded-full ${budget.needsPercentage <= 50 ? 'bg-blue-600' : 'bg-red-600'}`}
-                                                        style={{ width: `${Math.min(budget.needsPercentage, 100)}%` }}
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <div className="flex justify-between text-xs text-gray-600 mb-1">
-                                                    <span>Wants (Target: 30%)</span>
-                                                    <span>{budget.wantsPercentage}%</span>
-                                                </div>
-                                                <div className="w-full bg-gray-200 rounded-full h-2">
-                                                    <div
-                                                        className={`h-2 rounded-full ${budget.wantsPercentage <= 30 ? 'bg-purple-600' : 'bg-red-600'}`}
-                                                        style={{ width: `${Math.min(budget.wantsPercentage, 100)}%` }}
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <div className="flex justify-between text-xs text-gray-600 mb-1">
-                                                    <span>Savings (Target: 20%)</span>
-                                                    <span>{budget.savingsPercentage}%</span>
-                                                </div>
-                                                <div className="w-full bg-gray-200 rounded-full h-2">
-                                                    <div
-                                                        className={`h-2 rounded-full ${budget.savingsPercentage >= 20 ? 'bg-emerald-600' : 'bg-orange-600'}`}
-                                                        style={{ width: `${Math.min(budget.savingsPercentage, 100)}%` }}
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="bg-white rounded-lg shadow-md p-6">
-                                    <div className="flex justify-between items-center mb-4">
-                                        <h3 className="text-xl font-bold text-gray-800">Income Sources</h3>
-                                        <button
-                                            onClick={addIncome}
-                                            className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
-                                        >
-                                            <Plus size={18} />
-                                            Add Income
-                                        </button>
-                                    </div>
-                                    <div className="overflow-x-auto">
-                                        <table className="w-full">
-                                            <thead className="bg-gray-50">
-                                                <tr>
-                                                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Source</th>
-                                                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Amount</th>
-                                                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Frequency</th>
-                                                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Actions</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody className="divide-y divide-gray-200">
-                                                {income.map(inc => (
-                                                    <tr key={inc.id} className="hover:bg-gray-50">
-                                                        <td className="px-4 py-3">
-                                                            <input
-                                                                type="text"
-                                                                value={inc.source}
-                                                                onChange={(e) => updateIncome(inc.id, 'source', e.target.value)}
-                                                                className="w-full px-2 py-1 border rounded"
-                                                            />
-                                                        </td>
-                                                        <td className="px-4 py-3">
-                                                            <input
-                                                                type="number"
-                                                                value={inc.amount}
-                                                                onChange={(e) => updateIncome(inc.id, 'amount', Number(e.target.value))}
-                                                                className="w-24 px-2 py-1 border rounded"
-                                                            />
-                                                        </td>
-                                                        <td className="px-4 py-3">
-                                                            <select
-                                                                value={inc.frequency}
-                                                                onChange={(e) => updateIncome(inc.id, 'frequency', e.target.value)}
-                                                                className="px-2 py-1 border rounded"
-                                                            >
-                                                                <option>Weekly</option>
-                                                                <option>Bi-weekly</option>
-                                                                <option>Monthly</option>
-                                                                <option>Annual</option>
-                                                            </select>
-                                                        </td>
-                                                        <td className="px-4 py-3">
-                                                            <button
-                                                                onClick={() => setIncome(income.filter(i => i.id !== inc.id))}
-                                                                className="text-red-600 hover:text-red-800"
-                                                            >
-                                                                <Trash2 size={18} />
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-
-                                <div className="bg-white rounded-lg shadow-md p-6">
-                                    <h3 className="text-xl font-bold text-gray-800 mb-4">Budget Goals</h3>
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">Savings Target ($)</label>
-                                            <input
-                                                type="number"
-                                                value={budgetGoals.savingsTarget}
-                                                onChange={(e) => updateBudgetGoal('savingsTarget', Number(e.target.value))}
-                                                className="w-full px-3 py-2 border rounded-md"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">Needs Limit ($)</label>
-                                            <input
-                                                type="number"
-                                                value={budgetGoals.needsLimit}
-                                                onChange={(e) => updateBudgetGoal('needsLimit', Number(e.target.value))}
-                                                className="w-full px-3 py-2 border rounded-md"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">Wants Limit ($)</label>
-                                            <input
-                                                type="number"
-                                                value={budgetGoals.wantsLimit}
-                                                onChange={(e) => updateBudgetGoal('wantsLimit', Number(e.target.value))}
-                                                className="w-full px-3 py-2 border rounded-md"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div className="bg-white rounded-lg shadow-md p-6">
-                                        <div className="flex justify-between items-center mb-4">
-                                            <h3 className="text-xl font-bold text-gray-800">Needs</h3>
-                                            <button
-                                                onClick={addExpense}
-                                                className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
-                                            >
-                                                <Plus size={18} />
-                                                Add Need
-                                            </button>
-                                        </div>
-                                        <div className="space-y-3">
-                                            {expenses.filter(e => e.type === 'needs').map(expense => (
-                                                <div key={expense.id} className="border rounded-lg p-3">
-                                                    <div className="grid grid-cols-2 gap-2">
-                                                        <input
-                                                            type="text"
-                                                            value={expense.category}
-                                                            onChange={(e) => updateExpense(expense.id, 'category', e.target.value)}
-                                                            className="px-2 py-1 border rounded text-sm"
-                                                            placeholder="Category"
-                                                        />
-                                                        <input
-                                                            type="number"
-                                                            value={expense.amount}
-                                                            onChange={(e) => updateExpense(expense.id, 'amount', Number(e.target.value))}
-                                                            className="px-2 py-1 border rounded text-sm"
-                                                            placeholder="Amount"
-                                                        />
-                                                        <input
-                                                            type="date"
-                                                            value={expense.date}
-                                                            onChange={(e) => updateExpense(expense.id, 'date', e.target.value)}
-                                                            className="px-2 py-1 border rounded text-sm"
-                                                        />
-                                                        <div className="flex items-center gap-2">
-                                                            <label className="flex items-center gap-1 text-sm">
-                                                                <input
-                                                                    type="checkbox"
-                                                                    checked={expense.recurring}
-                                                                    onChange={(e) => updateExpense(expense.id, 'recurring', e.target.checked)}
-                                                                    className="w-4 h-4"
-                                                                />
-                                                                Recurring
-                                                            </label>
-                                                            <button
-                                                                onClick={() => setExpenses(expenses.filter(e => e.id !== expense.id))}
-                                                                className="ml-auto text-red-600 hover:text-red-800"
-                                                            >
-                                                                <Trash2 size={16} />
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                            <div className="pt-3 border-t">
-                                                <div className="flex justify-between items-center">
-                                                    <span className="font-semibold text-gray-700">Total Needs:</span>
-                                                    <span className={`font-bold ${budget.needsExpenses <= budgetGoals.needsLimit ? 'text-blue-600' : 'text-red-600'}`}>
-                                                        ${budget.needsExpenses.toFixed(2)}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="bg-white rounded-lg shadow-md p-6">
-                                        <div className="flex justify-between items-center mb-4">
-                                            <h3 className="text-xl font-bold text-gray-800">Wants</h3>
-                                            <button
-                                                onClick={() => {
-                                                    setExpenses([...expenses, {
-                                                        id: Date.now(),
-                                                        category: 'Other',
-                                                        amount: 0,
-                                                        date: new Date().toISOString().split('T')[0],
-                                                        type: 'wants',
-                                                        recurring: false
-                                                    }]);
-                                                }}
-                                                className="flex items-center gap-2 bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700"
-                                            >
-                                                <Plus size={18} />
-                                                Add Want
-                                            </button>
-                                        </div>
-                                        <div className="space-y-3">
-                                            {expenses.filter(e => e.type === 'wants').map(expense => (
-                                                <div key={expense.id} className="border rounded-lg p-3">
-                                                    <div className="grid grid-cols-2 gap-2">
-                                                        <input
-                                                            type="text"
-                                                            value={expense.category}
-                                                            onChange={(e) => updateExpense(expense.id, 'category', e.target.value)}
-                                                            className="px-2 py-1 border rounded text-sm"
-                                                            placeholder="Category"
-                                                        />
-                                                        <input
-                                                            type="number"
-                                                            value={expense.amount}
-                                                            onChange={(e) => updateExpense(expense.id, 'amount', Number(e.target.value))}
-                                                            className="px-2 py-1 border rounded text-sm"
-                                                            placeholder="Amount"
-                                                        />
-                                                        <input
-                                                            type="date"
-                                                            value={expense.date}
-                                                            onChange={(e) => updateExpense(expense.id, 'date', e.target.value)}
-                                                            className="px-2 py-1 border rounded text-sm"
-                                                        />
-                                                        <div className="flex items-center gap-2">
-                                                            <label className="flex items-center gap-1 text-sm">
-                                                                <input
-                                                                    type="checkbox"
-                                                                    checked={expense.recurring}
-                                                                    onChange={(e) => updateExpense(expense.id, 'recurring', e.target.checked)}
-                                                                    className="w-4 h-4"
-                                                                />
-                                                                Recurring
-                                                            </label>
-                                                            <button
-                                                                onClick={() => setExpenses(expenses.filter(e => e.id !== expense.id))}
-                                                                className="ml-auto text-red-600 hover:text-red-800"
-                                                            >
-                                                                <Trash2 size={16} />
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                            <div className="pt-3 border-t">
-                                                <div className="flex justify-between items-center">
-                                                    <span className="font-semibold text-gray-700">Total Wants:</span>
-                                                    <span className={`font-bold ${budget.wantsExpenses <= budgetGoals.wantsLimit ? 'text-purple-600' : 'text-red-600'}`}>
-                                                        ${budget.wantsExpenses.toFixed(2)}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Note: Other tabs (schedule, internships, habits, goals) would follow the same pattern */}
-                        {activeTab !== 'dashboard' && activeTab !== 'academic' && activeTab !== 'budget' && (
-                            <div className="bg-white rounded-lg shadow-md p-12 text-center">
-                                <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                                    {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} Module
-                                </h2>
-                                <p className="text-gray-600 mb-6">
-                                    This tab is fully functional in the complete version. Try the Academic and Budget tabs to see the tracker in action!
-                                </p>
-                                <a href="index.html" className="inline-flex items-center bg-indigo-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-indigo-700">
-                                    Get Full Access for $19
-                                </a>
-                            </div>
-                        )}
+                    <div class="text-center">
+                        <div class="inline-flex items-center bg-green-50 border-2 border-green-200 rounded-full px-6 py-3">
+                            <svg class="w-6 h-6 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                            </svg>
+                            <span class="text-green-800 font-semibold">30-Day Money-Back Guarantee</span>
+                        </div>
+                        <p class="text-gray-500 text-sm mt-3">If you're not crushing your goals within 30 days, we'll refund every penny. No questions asked.</p>
                     </div>
                 </div>
-            );
-        }
+            </div>
+        </div>
+    </section>
 
-        ReactDOM.render(<CollegeSuccessTracker />, document.getElementById('root'));
+    <!-- FAQ Section -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-white">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl sm:text-5xl font-black text-gray-900 mb-4">
+                    Frequently Asked Questions
+                </h2>
+            </div>
+
+            <div class="space-y-6">
+                <div class="bg-gray-50 rounded-xl p-6 border-2 border-gray-200">
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Is this a Notion template or Excel?</h3>
+                    <p class="text-gray-700">Currently available as an interactive web app that works in your browser. No downloads needed. Excel and Notion versions coming soon based on demand.</p>
+                </div>
+
+                <div class="bg-gray-50 rounded-xl p-6 border-2 border-gray-200">
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Will my data be saved?</h3>
+                    <p class="text-gray-700">Yes! Your data is saved locally in your browser and persists across sessions. We're also adding cloud sync soon so you can access your data from any device.</p>
+                </div>
+
+                <div class="bg-gray-50 rounded-xl p-6 border-2 border-gray-200">
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Can I use this on my phone?</h3>
+                    <p class="text-gray-700">Absolutely! The tracker is fully responsive and works great on phones, tablets, and computers. Track expenses between classes or update your habits on the go.</p>
+                </div>
+
+                <div class="bg-gray-50 rounded-xl p-6 border-2 border-gray-200">
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">What if I'm not tech-savvy?</h3>
+                    <p class="text-gray-700">If you can use Instagram, you can use this. It's designed for simplicity—no coding, no complex setup. Plus, we include a quick-start video guide that walks you through everything.</p>
+                </div>
+
+                <div class="bg-gray-50 rounded-xl p-6 border-2 border-gray-200">
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Is there a refund policy?</h3>
+                    <p class="text-gray-700">Yes! 30-day money-back guarantee. If you don't love it or it's not helping you get organized, just email us and we'll refund you immediately. No hassle, no questions asked.</p>
+                </div>
+
+                <div class="bg-gray-50 rounded-xl p-6 border-2 border-gray-200">
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Do you offer student discounts?</h3>
+                    <p class="text-gray-700">The $19 price IS the student discount! We believe good tools shouldn't break college budgets. That's why we made it a one-time payment instead of a monthly subscription.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 gradient-bg">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-4xl sm:text-5xl font-black text-white mb-6">
+                You're One Decision Away From<br/>Your Best Semester Yet
+            </h2>
+            <p class="text-xl text-purple-100 mb-8 max-w-2xl mx-auto">
+                Stop winging it. Stop stressing. Stop forgetting.<br/>
+                Start organizing. Start achieving. Start winning.
+            </p>
+            <a href="#demo" class="inline-flex items-center bg-white text-indigo-600 px-10 py-5 rounded-full text-xl font-bold hover:shadow-2xl transition-all duration-300 hover:scale-105 group mb-6">
+                Transform My College Experience
+                <svg class="w-6 h-6 ml-3 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                </svg>
+            </a>
+            <div class="flex justify-center items-center gap-8 text-white flex-wrap">
+                <div class="flex items-center">
+                    <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                    </svg>
+                    <span>Secure Checkout</span>
+                </div>
+                <div class="flex items-center">
+                    <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                    </svg>
+                    <span>All Major Cards</span>
+                </div>
+                <div class="flex items-center">
+                    <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                    <span>Instant Delivery</span>
+                </div>
+                <div class="flex items-center">
+                    <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                    </svg>
+                    <span>1,000+ Students</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-400 py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto text-center">
+            <div class="flex items-center justify-center space-x-2 mb-4">
+                <div class="w-10 h-10 gradient-bg rounded-lg flex items-center justify-center">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                </div>
+                <span class="text-xl font-bold text-white">College Success Tracker</span>
+            </div>
+            <p class="mb-6">Helping college students organize their lives, one dashboard at a time.</p>
+            <div class="flex justify-center space-x-6 mb-8">
+                <a href="#" class="hover:text-white transition-colors">Terms of Service</a>
+                <a href="#" class="hover:text-white transition-colors">Privacy Policy</a>
+                <a href="#" class="hover:text-white transition-colors">Contact</a>
+            </div>
+            <p class="text-sm">&copy; 2025 College Success Tracker. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add subtle parallax effect on scroll
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const parallaxElements = document.querySelectorAll('.float');
+            parallaxElements.forEach(el => {
+                const speed = 0.5;
+                el.style.transform = `translateY(${scrolled * speed}px)`;
+            });
+        });
     </script>
 </body>
-</html>
+</html>-center mb-16">
+                <div class="inline-block mb-4">
+                    <span class="bg-purple-100 text-purple-700 px-4 py-2 rounded-full text-sm font-semibold">
+                        🎓 1,000+ Students Already Using This
+                    </span>
+                </div>
+                <h1 class="text-5xl sm:text-6xl lg:text-7xl font-black text-gray-900 mb-6 leading-tight">
+                    Stop Juggling Spreadsheets.<br/>
+                    <span class="gradient-text">Start Crushing Your Goals.</span>
+                </h1>
+                <p class="text-xl sm:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
+                    The all-in-one success system that helps college students manage their grades, internships, budget, and habits—so you can actually enjoy college while building your future.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                    <a href="#demo" class="gradient-bg text-white px-8 py-4 rounded-full text-lg font-bold hover:shadow-2xl transition-all duration-300 hover:scale-105 inline-flex items-center group">
+                        Get Started for $19
+                        <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                        </svg>
+                    </a>
+                    <a href="#how-it-works" class="bg-white text-gray-900 px-8 py-4 rounded-full text-lg font-bold hover:shadow-xl transition-all duration-300 border-2 border-gray-200">
+                        See How It Works
+                    </a>
+                </div>
+                <p class="text-sm text-gray-500 mt-4">
+                    ✓ One-time payment  ✓ No subscription  ✓ 30-day money-back guarantee
+                </p>
+            </div>
+
+            <!-- Hero Image / Demo Preview -->
+            <div class="relative max-w-6xl mx-auto">
+                <div class="absolute inset-0 gradient-bg opacity-20 blur-3xl rounded-full"></div>
+                <div class="relative bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden">
+                    <div class="bg-gray-800 px-4 py-3 flex items-center space-x-2">
+                        <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                    </div>
+                    <div class="p-8 bg-gradient-to-br from-indigo-50 to-purple-50">
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                            <div class="bg-white rounded-lg p-4 shadow">
+                                <div class="text-sm text-gray-600 mb-1">Current GPA</div>
+                                <div class="text-3xl font-bold text-indigo-900">3.8</div>
+                            </div>
+                            <div class="bg-white rounded-lg p-4 shadow">
+                                <div class="text-sm text-gray-600 mb-1">Applications</div>
+                                <div class="text-3xl font-bold text-green-900">12</div>
+                            </div>
+                            <div class="bg-white rounded-lg p-4 shadow">
+                                <div class="text-sm text-gray-600 mb-1">Savings</div>
+                                <div class="text-3xl font-bold text-emerald-900">$847</div>
+                            </div>
+                            <div class="bg-white rounded-lg p-4 shadow">
+                                <div class="text-sm text-gray-600 mb-1">Habits</div>
+                                <div class="text-3xl font-bold text-purple-900">87%</div>
+                            </div>
+                        </div>
+                        <div class="text-center text-gray-500 text-sm">
+                            Your entire college life in one dashboard ↑
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Problem Section -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-white">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl sm:text-5xl font-black text-gray-900 mb-6">
+                    Sound Familiar?
+                </h2>
+            </div>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+                <div class="bg-red-50 border-2 border-red-200 rounded-xl p-6">
+                    <div class="text-4xl mb-3">📚</div>
+                    <p class="text-gray-800 font-semibold">You're tracking assignments on sticky notes, your phone, and three different apps</p>
+                </div>
+                <div class="bg-orange-50 border-2 border-orange-200 rounded-xl p-6">
+                    <div class="text-4xl mb-3">💸</div>
+                    <p class="text-gray-800 font-semibold">You have no idea where your money goes each month</p>
+                </div>
+                <div class="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-6">
+                    <div class="text-4xl mb-3">🎯</div>
+                    <p class="text-gray-800 font-semibold">Your New Year's resolutions died in February</p>
+                </div>
+                <div class="bg-green-50 border-2 border-green-200 rounded-xl p-6">
+                    <div class="text-4xl mb-3">😰</div>
+                    <p class="text-gray-800 font-semibold">Internship applications are scattered across your email and a half-filled Google Doc</p>
+                </div>
+                <div class="bg-blue-50 border-2 border-blue-200 rounded-xl p-6">
+                    <div class="text-4xl mb-3">📉</div>
+                    <p class="text-gray-800 font-semibold">You keep meaning to calculate your GPA but... later</p>
+                </div>
+                <div class="bg-purple-50 border-2 border-purple-200 rounded-xl p-6">
+                    <div class="text-4xl mb-3">😵</div>
+                    <p class="text-gray-800 font-semibold">Everything feels chaotic and you're constantly playing catch-up</p>
+                </div>
+            </div>
+            <div class="text-center mt-12">
+                <p class="text-2xl font-bold text-gray-900">You're not disorganized.</p>
+                <p class="text-2xl font-bold gradient-text">You just don't have the right system.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Solution Section -->
+    <section id="how-it-works" class="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-indigo-50 to-purple-50">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl sm:text-5xl font-black text-gray-900 mb-6">
+                    Meet Your New Success System
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    The College Success Tracker brings everything together in one beautiful, easy-to-use dashboard. No more context switching. No more forgotten deadlines. No more financial stress.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="bg-white rounded-2xl p-8 shadow-lg card-hover">
+                    <div class="w-14 h-14 feature-icon rounded-xl flex items-center justify-center mb-4">
+                        <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">📊 Dashboard Overview</h3>
+                    <p class="text-gray-600">See your GPA, savings, habit streak, and upcoming deadlines at a glance. Your entire college life on one screen.</p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="bg-white rounded-2xl p-8 shadow-lg card-hover">
+                    <div class="w-14 h-14 feature-icon rounded-xl flex items-center justify-center mb-4">
+                        <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">📚 Academic Tracker</h3>
+                    <p class="text-gray-600">Automatic GPA calculator, course grades, assignment deadlines, and study schedule planner. No more math anxiety.</p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="bg-white rounded-2xl p-8 shadow-lg card-hover">
+                    <div class="w-14 h-14 feature-icon rounded-xl flex items-center justify-center mb-4">
+                        <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">💼 Internship Pipeline</h3>
+                    <p class="text-gray-600">Track every application from "Applied" to "Offer." Never miss an interview deadline or forget to follow up.</p>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="bg-white rounded-2xl p-8 shadow-lg card-hover">
+                    <div class="w-14 h-14 feature-icon rounded-xl flex items-center justify-center mb-4">
+                        <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">💰 Smart Budget Manager</h3>
+                    <p class="text-gray-600">The 50/30/20 rule built right in. Separate tracking for essentials vs. fun spending. Savings goals that actually work.</p>
+                </div>
+
+                <!-- Feature 5 -->
+                <div class="bg-white rounded-2xl p-8 shadow-lg card-hover">
+                    <div class="w-14 h-14 feature-icon rounded-xl flex items-center justify-center mb-4">
+                        <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">✅ Habit Tracker</h3>
+                    <p class="text-gray-600">Weekly checkbox system proven to increase follow-through. See your completion percentage in real-time.</p>
+                </div>
+
+                <!-- Feature 6 -->
+                <div class="bg-white rounded-2xl p-8 shadow-lg card-hover">
+                    <div class="w-14 h-14 feature-icon rounded-xl flex items-center justify-center mb-4">
+                        <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">🎯 Goal Management</h3>
+                    <p class="text-gray-600">Set academic, career, financial, and personal goals. Slider-based progress tracking. Deadline reminders keep you accountable.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Social Proof -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 gradient-bg">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl sm:text-5xl font-black text-white mb-4">
+                    Join 1,000+ Students Who Stopped Stressing
+                </h2>
+                <p class="text-xl text-purple-100">and Started Succeeding</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="testimonial-card rounded-2xl p-8 text-white">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center font-bold text-lg">SM</div>
+                        <div class="ml-4">
+                            <div class="font-bold">Sarah M.</div>
+                            <div class="text-sm text-purple-200">Junior at UMich</div>
+                        </div>
+                    </div>
+                    <div class="flex mb-3">
+                        <span class="text-yellow-400">⭐⭐⭐⭐⭐</span>
+                    </div>
+                    <p class="text-purple-100 leading-relaxed">"I went from a 2.8 to a 3.6 GPA in one semester just by actually tracking my assignments. Game changer."</p>
+                </div>
+
+                <div class="testimonial-card rounded-2xl p-8 text-white">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center font-bold text-lg">MT</div>
+                        <div class="ml-4">
+                            <div class="font-bold">Marcus T.</div>
+                            <div class="text-sm text-purple-200">Sophomore at UCLA</div>
+                        </div>
+                    </div>
+                    <div class="flex mb-3">
+                        <span class="text-yellow-400">⭐⭐⭐⭐⭐</span>
+                    </div>
+                    <p class="text-purple-100 leading-relaxed">"Landed my dream internship because I finally had all my applications organized. Worth every penny."</p>
+                </div>
+
+                <div class="testimonial-card rounded-2xl p-8 text-white">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center font-bold text-lg">JL</div>
+                        <div class="ml-4">
+                            <div class="font-bold">Jenny L.</div>
+                            <div class="text-sm text-purple-200">Senior at UT Austin</div>
+                        </div>
+                    </div>
+                    <div class="flex mb-3">
+                        <span class="text-yellow-400">⭐⭐⭐⭐⭐</span>
+                    </div>
+                    <p class="text-purple-100 leading-relaxed">"I saved $800 last semester using the budget tracker. First time I've ever saved money in college."</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo Section -->
+    <section id="demo" class="py-20 px-4 sm:px-6 lg:px-8 bg-white">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl sm:text-5xl font-black text-gray-900 mb-6">
+                    Try It Right Now - Free Demo
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
+                    Click below to explore the full interactive demo. Add courses, track expenses, manage habits—see exactly how it works before you buy.
+                </p>
+                <a href="https://claude.site/artifacts/YOUR_ARTIFACT_ID" target="_blank" class="inline-flex items-center gradient-bg text-white px-10 py-5 rounded-full text-xl font-bold hover:shadow-2xl transition-all duration-300 hover:scale-105 group">
+                    Launch Interactive Demo
+                    <svg class="w-6 h-6 ml-3 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                    </svg>
+                </a>
+                <p class="text-sm text-gray-500 mt-4">
+                    💡 Fully functional • No signup required • Try all features
+                </p>
+            </div>
+
+            <!-- Demo Preview Cards -->
+            <div class="grid md:grid-cols-2 gap-8 mt-16">
+                <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-8 border-2 border-indigo-200">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">What You'll See in the Demo:</h3>
+                    <ul class="space-y-3">
+                        <li class="flex items-start">
+                            <svg class="w-6 h-6 text-green-500 mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            <span class="text-gray-700">Live GPA calculator with sample courses</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-6 h-6 text-green-500 mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            <span class="text-gray-700">Interactive budget tracker with 50/30/20 visualization</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-6 h-6 text-green-500 mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            <span class="text-gray-700">Habit tracking with weekly checkbox system</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-6 h-6 text-green-500 mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            <span class="text-gray-700">Internship application pipeline manager</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-6 h-6 text-green-500 mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            <span class="text-gray-700">Goal tracking with progress sliders</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-8 border-2 border-purple-200">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Why Students Love It:</h3>
+                    <ul class="space-y-3">
+                        <li class="flex items-start">
+                            <span class="text-2xl mr-3">⚡</span>
+                            <span class="text-gray-700"><strong>Updates instantly</strong> - See your GPA recalculate as you add grades</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-2xl mr-3">🎨</span>
+                            <span class="text-gray-700"><strong>Beautiful design</strong> - Clean, modern interface you'll actually want to use</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-2xl mr-3">📱</span>
+                            <span class="text-gray-700"><strong>Works everywhere</strong> - Desktop, tablet, or phone</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-2xl mr-3">🚀</span>
+                            <span class="text-gray-700"><strong>No learning curve</strong> - Intuitive from the first click</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-2xl mr-3">💪</span>
+                            <span class="text-gray-700"><strong>Proven system</strong> - Based on productivity frameworks that actually work</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-slate-50 to-indigo-50">
+        <div class="max-w-4xl mx-auto">
+            <div class="text
